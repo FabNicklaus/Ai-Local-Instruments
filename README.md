@@ -2,6 +2,7 @@
 
 Toolkit locale basato su intelligenza artificiale per l'elaborazione multimodale (Vision OCR e Speech-to-Text) progettato per integrarsi nei flussi di automazione.
 
+
 ## Struttura del Repository
 
 - `ocr/`: Modulo OCR avanzato basato su **Qwen2.5-VL** e accelerato tramite GPU.
