@@ -12,6 +12,7 @@ Questo repository contiene il toolkit Python per l'elaborazione multimodale. Alt
 | **PwrReader** | PDF Reader con LLM | `/home/mfm/ClaudePrj/PwrReader/` |
 | **PwrSearch/bilf** | Business Intelligence Lead Finder | `/home/mfm/ClaudePrj/PwrSearch/bilf/` |
 | **Thunderbird-RAG** | RAG per email Thunderbird | `/mnt/c/Users/mfm/thunderbird-rag/` |
+| **Instagram-RAG** | RAG per post Instagram salvati | `/mnt/c/Users/mfm/instagram-rag/` |
 
 ---
 
@@ -235,6 +236,78 @@ Indicizzazione incrementale: salta i file non modificati.
 
 ---
 
+## Instagram-RAG
+
+Sistema RAG per i post salvati su Instagram.
+
+**Path:** `/mnt/c/Users/mfm/instagram-rag/`
+
+### Setup
+
+```bash
+cd /mnt/c/Users/mfm/instagram-rag
+npm install
+npx playwright install chromium
+```
+
+### Configurazione (.env)
+
+```env
+INSTAGRAM_USERNAME=Fabnicklaus
+INSTAGRAM_PASSWORD=your_password
+MINIMAX_API_KEY=your_key_here
+MINIMAX_API_BASE=https://api.minimax.io/v1
+```
+
+### Utilizzo
+
+```bash
+# Lista le collezioni salvate
+node bin/scrape.js --list-collections
+
+# Estrai post da una collezione
+node bin/scrape.js --collection "IT Tricks"
+
+# Estrai da tutte le collezioni
+node bin/scrape.js --all
+
+# Cerca nei post
+node bin/search.js "python"
+
+# Fai domande
+node bin/qa.js "cosa ho salvato su Python?"
+
+# Scarica contenuti URL
+node bin/fetch-urls.js --all --limit 50
+```
+
+### Struttura
+
+```
+instagram-rag/
+├── bin/
+│   ├── scrape.js      # Estrae post
+│   ├── fetch-urls.js # Scarica URL
+│   ├── qa.js         # Fai domande
+│   ├── search.js     # Debug BM25
+│   └── status.js     # Status
+├── lib/
+│   ├── db.js         # SQLite + BM25
+│   ├── instagram.js   # Playwright automation
+│   └── fetchUrl.js   # Fetch URL
+└── data/
+    └── instagram_rag.db
+```
+
+### Come Funziona
+
+- **Scraping:** Playwright simula login e naviga ai post salvati
+- **Storage:** SQLite full-text
+- **Search:** BM25 ranking su caption e hashtags
+- **LLM:** MiniMax o API OpenAI-compatibile
+
+---
+
 ## Comandi Rapidi
 
 ```bash
@@ -251,6 +324,7 @@ source /home/mfm/venv_whisper/bin/activate  # Whisper
 |----------|--------|
 | Ai-Local-Instruments | https://github.com/FabNicklaus/Ai-Local-Instruments |
 | Thunderbird-RAG | https://github.com/FabNicklaus/Thunderbird-RAG |
+| Instagram-RAG | Locale (da creare) |
 | PwrReader | Locale |
 | PwrSearch/bilf | Locale |
 
