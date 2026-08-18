@@ -1,62 +1,259 @@
 # AI Automation Local Toolkit
 
-Toolkit locale basato su intelligenza artificiale per l'elaborazione multimodale (Vision-OCR, Image-Analysis  e Speech-to-Text) progettato per integrarsi nei flussi di automazione.
+Toolkit locale per l'elaborazione multimodale con intelligenza artificiale.
 
+## Panoramica Progetti
 
-## Struttura del Repository
+Questo repository contiene il toolkit Python per l'elaborazione multimodale. Altri progetti correlati:
 
-- `ocr/`: Modulo OCR e Analisi Immagini avanzato basato su **Qwen2.5-VL** e accelerato tramite GPU.
-- `whisper/`: Modulo di trascrizione audio basato su **OpenAI Whisper**.
+| Progetto | Descrizione | Path |
+|----------|-------------|------|
+| **Ai-Local-Instruments** | OCR, Image Analysis, Whisper | `/home/mfm/Ai-Local-Instruments/` |
+| **PwrReader** | PDF Reader con LLM | `/home/mfm/ClaudePrj/PwrReader/` |
+| **PwrSearch/bilf** | Business Intelligence Lead Finder | `/home/mfm/ClaudePrj/PwrSearch/bilf/` |
+| **Thunderbird-RAG** | RAG per email Thunderbird | `/mnt/c/Users/mfm/thunderbird-rag/` |
 
-## Prerequisiti e Setup
+---
 
-Gli strumenti utilizzano ambienti virtuali (`venv`) separati per evitare conflitti di dipendenze tra i framework di visione e audio.
+## Ai-Local-Instruments
 
-### 1. Setup OCR e Analisi Immagini (`venv_ocr`)
-Requisiti di sistema: `poppler-utils` (per la gestione dei PDF).
+Toolkit Python per elaborazione multimodale con GPU.
+
+### Struttura
+
+- `ocr/`: OCR e Analisi Immagini (Qwen2.5-VL)
+- `whisper/`: Trascrizione audio (OpenAI Whisper)
+
+### Prerequisiti di Sistema
+
 ```bash
+# OCR e PDF
 sudo apt update && sudo apt install -y poppler-utils
 
-# Attivazione e installazione dipendenze
+# Whisper e audio
+sudo apt update && sudo apt install -y ffmpeg
+```
+
+### Setup Ambienti Virtuali
+
+```bash
+# Ambiente OCR e Analisi Immagini
 python3 -m venv venv_ocr
 source venv_ocr/bin/activate
 pip install -r ocr/requirements.txt
 
-### 2. Setup Whisper ('venv_whisper')
-Requisiti di sistema: 'ffmpeg' (consigliato per la gestione dei flussi audio/video).
-```bash
-sudo apt update && sudo apt install -y ffmpeg
-
-# Attivazione e installazione dipendenze
+# Ambiente Whisper
 python3 -m venv venv_whisper
 source venv_whisper/bin/activate
 pip install -r whisper/requirements.txt
+```
 
-### 3. Utilizzo di OCR
+### Utilizzo
+
+**OCR (da PDF o immagini):**
+```bash
 source venv_ocr/bin/activate
-python ocr/ocr_tool.py /percorso/al/tuo/documento-o-immagine.jpg (o .pdf)
+python ocr/ocr_tool.py /percorso/al/documento.pdf
+python ocr/ocr_tool.py /percorso/immagine.jpg
+```
 
-### 4. Utilizzo di Image Analyzer
+**Analisi Immagini:**
+```bash
 source venv_ocr/bin/activate
-python ocr/image_analyzer.py /percorso/alla/tua/immagine.jpg
+python ocr/image_analyzer.py /percorso/immagine.jpg
+```
 
-### 5. Utilizzo di Whisper
+**Trascrizione Audio/Video:**
+```bash
 source venv_whisper/bin/activate
-python whisper/image_analyzer.py /percorso/alla/tua/immagine.jpg
+python whisper/whisper_tool.py /percorso/audio.mp3
+python whisper/whisper_tool.py /percorso/video.mp4
+```
 
-### 6. Gestione Modelli e Ollama
-Per i servizi che sfruttano motori locali leggeri o runner dedicati tramite Ollama:
+### Modelli
 
-1. **Verifica il servizio Ollama**:
-   Assicurati che il demone sia attivo sulla macchina locale.
-   ```bash
-   systemctl status ollama
-   # oppure avvio manuale
-   ollama serve
+- **OCR/Image Analysis:** Qwen2.5-VL-7B-Instruct (4-bit quantizzato su GPU)
+- **Whisper:** Faster Whisper large-v3 (GPU CUDA)
 
-2. Pull dei modelli supportati:
-   Scarica i modelli necessari per i task di inferenza testuale o supporto agli script:
-   ```bash
-   ollama pull qwen2.5:7b-instruct
-   ollama pull llama3.1:8b
+### Ollama (modelli locali opzionali)
 
+```bash
+# Verifica servizio
+systemctl status ollama
+# oppure
+ollama serve
+
+# Pull modelli
+ollama pull qwen2.5:7b-instruct
+ollama pull llama3.1:8b
+```
+
+---
+
+## PwrReader
+
+PDF Reader con integrazione LLM per estrazione entità.
+
+**Path:** `/home/mfm/ClaudePrj/PwrReader/`
+
+### Setup
+
+```bash
+cd /home/mfm/ClaudePrj/PwrReader
+export PATH="$HOME/.local/share/node-v20.11.0-linux-x64/bin:$PATH"
+npm install
+npm run build
+```
+
+### Avvio
+
+```bash
+npm run dev
+```
+
+Apri: **http://localhost:3000**
+
+### Configurazione (.env)
+
+```env
+OPENROUTER_API_KEY=your_openrouter_key_here
+OPENROUTER_MODEL=google/gemini-2.5-pro
+SERPAPI_KEY=your_serpapi_key_here
+```
+
+### Funzionalità
+
+- Apertura e visualizzazione PDF
+- Navigazione pagine e indice contenuti
+- Ricerca testuale (case-sensitive, whole-word, regex)
+- Modalità scura e impostazioni di lettura
+- Estrazione entità con LLM (Nomi, Oggetti, Località)
+- Evidenziazione visiva per tipo entità
+- Ricerca web SerpAPI
+
+---
+
+## PwrSearch/bilf
+
+Business Intelligence Lead Finder - Cerca aziende italiane per provincia e categoria.
+
+**Path:** `/home/mfm/ClaudePrj/PwrSearch/bilf/`
+
+### Setup
+
+```bash
+cd /home/mfm/ClaudePrj/PwrSearch/bilf
+npm install
+```
+
+### Configurazione (.env.local)
+
+```env
+SERPAPI_API_KEY=your_api_key_here
+```
+
+### Avvio
+
+```bash
+npm run dev
+```
+
+App: **http://localhost:3000**
+
+### Funzionalità
+
+- Ricerca per 107 province italiane + categoria
+- Paginazione (10 risultati per pagina)
+- Campi: nome, telefono, email, PEC, sito, social, P.IVA, fatturato, dipendenti
+- Deduplicazione per P.IVA o nome+indirizzo
+- Storico ricerche
+- Esportazione CSV
+- Lookup INI-PEC
+
+---
+
+## Thunderbird-RAG
+
+Sistema RAG locale per indicizzare e interrogare le email Thunderbird.
+
+**Path:** `/mnt/c/Users/mfm/thunderbird-rag/`
+
+**GitHub:** https://github.com/FabNicklaus/Thunderbird-RAG
+
+### Setup
+
+```bash
+cd /mnt/c/Users/mfm/thunderbird-rag
+npm install
+```
+
+### Configurazione (.env)
+
+```env
+MINIMAX_API_KEY=your_key_here
+MINIMAX_API_BASE=https://api.minimax.io/v1
+```
+
+### Utilizzo
+
+```bash
+# 1. Indicizza le email
+node bin/parse.js "/percorso/folder" "/percorso/baseMailDir"
+
+# 2. Scarica contenuti URL
+node bin/fetch-urls.js --all --limit 50
+
+# 3. Fai domande
+node bin/qa.js "cosa ho salvato su Python ultimamente?" --context 5
+```
+
+### Struttura
+
+```
+thunderbird-rag/
+├── bin/
+│   ├── parse.js      # Indicizza email
+│   ├── fetch-urls.js # Scarica URL
+│   ├── qa.js         # Fai domande
+│   └── search.js     # Debug BM25
+├── lib/
+│   ├── db.js         # SQLite + BM25
+│   ├── parser.js     # Parser .eml
+│   └── fetchUrl.js   # Fetch URL
+└── data/
+    └── *.db          # SQLite databases
+```
+
+### Come Funziona
+
+- **Parsing:** Legge `.mozmsgs` Thunderbird, estrae subject/from/date/body/URLs
+- **Storage:** SQLite full-text (nessun vettoriale esterno)
+- **Search:** BM25 ranking
+- **LLM:** Qualsiasi API OpenAI-compatibile
+
+Indicizzazione incrementale: salta i file non modificati.
+
+---
+
+## Comandi Rapidi
+
+```bash
+# Attivazione venv
+source /home/mfm/venv_ocr/bin/activate      # OCR/Image
+source /home/mfm/venv_whisper/bin/activate  # Whisper
+```
+
+---
+
+## Sincronizzazione GitHub
+
+| Progetto | GitHub |
+|----------|--------|
+| Ai-Local-Instruments | https://github.com/FabNicklaus/Ai-Local-Instruments |
+| Thunderbird-RAG | https://github.com/FabNicklaus/Thunderbird-RAG |
+| PwrReader | Locale |
+| PwrSearch/bilf | Locale |
+
+---
+
+*Per aggiungere nuovi progetti, aggiornare questo README e la tabella panoramica.*
