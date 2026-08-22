@@ -1,3 +1,8 @@
 venv_ocr/
 venv_whisper/
 __pycache__/
+
+# Instagram-RAG
+instagram-rag/data/*.db
+instagram-rag/ig_export/
+*.session.json

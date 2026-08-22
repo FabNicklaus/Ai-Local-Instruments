@@ -238,7 +238,7 @@ Indicizzazione incrementale: salta i file non modificati.
 
 ## Instagram-RAG
 
-Sistema RAG per i post salvati su Instagram.
+Sistema RAG per i post salvati su Instagram usando data export ufficiale.
 
 **Path:** `/mnt/c/Users/mfm/instagram-rag/`
 
@@ -247,34 +247,32 @@ Sistema RAG per i post salvati su Instagram.
 ```bash
 cd /mnt/c/Users/mfm/instagram-rag
 npm install
-npx playwright install chromium
 ```
 
 ### Configurazione (.env)
 
 ```env
-INSTAGRAM_USERNAME=Fabnicklaus
-INSTAGRAM_PASSWORD=your_password
 MINIMAX_API_KEY=your_key_here
 MINIMAX_API_BASE=https://api.minimax.io/v1
 ```
 
+### Esportazione dati Instagram
+
+1. Vai su `https://instagram.com/download/request`
+2. Richiedi il download dei tuoi dati
+3. Estrai lo ZIP in `ig_export/extracted/`
+
 ### Utilizzo
 
 ```bash
-# Lista le collezioni salvate
-node bin/scrape.js --list-collections
-
-# Estrai post da una collezione
-node bin/scrape.js --collection "IT Tricks"
-
-# Estrai da tutte le collezioni
-node bin/scrape.js --all
+# Parsa le collezioni salvate
+node bin/parse-instagram-data.js --file ig_export/extracted/your_instagram_activity/saved/saved_collections.json
 
 # Cerca nei post
 node bin/search.js "python"
+node bin/search.js "python" -c "IT Tricks"
 
-# Fai domande
+# Fai domande (RAG arricchito con autori e messaggi)
 node bin/qa.js "cosa ho salvato su Python?"
 
 # Scarica contenuti URL
@@ -286,25 +284,32 @@ node bin/fetch-urls.js --all --limit 50
 ```
 instagram-rag/
 ├── bin/
-│   ├── scrape.js      # Estrae post
-│   ├── fetch-urls.js # Scarica URL
-│   ├── qa.js         # Fai domande
-│   ├── search.js     # Debug BM25
-│   └── status.js     # Status
+│   ├── parse-instagram-data.js  # Parser export Instagram
+│   ├── fetch-urls.js            # Scarica URL
+│   ├── qa.js                    # RAG Q&A
+│   └── search.js                # Ricerca BM25
 ├── lib/
 │   ├── db.js         # SQLite + BM25
-│   ├── instagram.js   # Playwright automation
-│   └── fetchUrl.js   # Fetch URL
+│   ├── fetchUrl.js   # Fetch URL
+│   └── messages.js   # Parser messaggi DM
 └── data/
     └── instagram_rag.db
 ```
 
 ### Come Funziona
 
-- **Scraping:** Playwright simula login e naviga ai post salvati
-- **Storage:** SQLite full-text
-- **Search:** BM25 ranking su caption e hashtags
+- **Parsing:** Legge `saved_collections.json` dall'export Instagram
+- **Estrazione:** Caption, hashtags, URL, autori, timestamp da 722 post in 18 collezioni
+- **Message Integration:** Collega messaggi DM ai post tramite autore (1528 messaggi da 84 conversazioni)
+- **Search:** BM25 ranking su caption + hashtags + contenuti URL
 - **LLM:** MiniMax o API OpenAI-compatibile
+
+### Statistiche
+
+- 722 post salvati in 18 collezioni
+- 181 autori unici
+- 257 post nella collezione "IT Tricks"
+- 1528 messaggi da 84 conversazioni
 
 ---
 
@@ -324,7 +329,7 @@ source /home/mfm/venv_whisper/bin/activate  # Whisper
 |----------|--------|
 | Ai-Local-Instruments | https://github.com/FabNicklaus/Ai-Local-Instruments |
 | Thunderbird-RAG | https://github.com/FabNicklaus/Thunderbird-RAG |
-| Instagram-RAG | Locale (da creare) |
+| Instagram-RAG | https://github.com/FabNicklaus/Ai-Local-Instruments |
 | PwrReader | Locale |
 | PwrSearch/bilf | Locale |
 
